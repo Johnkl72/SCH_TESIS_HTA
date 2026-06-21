@@ -1,0 +1,1212 @@
+{
+  "datasets": [
+    {
+      "name": "hta_metrics",
+      "displayName": "HTA Metrics",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.hta_sis.ua_hta_gold_ml",
+        "dimensions": [
+          {
+            "name": "codigo_anonimizado",
+            "expr": "CODIGO_ANONIMIZADO"
+          },
+          {
+            "name": "sexo",
+            "expr": "SEXO"
+          },
+          {
+            "name": "edad",
+            "expr": "EDAD"
+          },
+          {
+            "name": "grupo_edad",
+            "expr": "CASE \n  WHEN EDAD < 18 THEN '0-17'\n  WHEN EDAD < 30 THEN '18-29'\n  WHEN EDAD < 45 THEN '30-44'\n  WHEN EDAD < 60 THEN '45-59'\n  WHEN EDAD < 75 THEN '60-74'\n  ELSE '75+'\nEND\n"
+          },
+          {
+            "name": "nivel_eess",
+            "expr": "NIVEL_EESS"
+          },
+          {
+            "name": "servicio_prestacional",
+            "expr": "SERVICIO_PRESTACIONAL"
+          },
+          {
+            "name": "tipo_personal_salud",
+            "expr": "TIPO_PERSONAL_SALUD"
+          },
+          {
+            "name": "target_destino",
+            "expr": "TARGET_DESTINO"
+          },
+          {
+            "name": "diagnostico_principal",
+            "expr": "DIAGNOSTICO_PRINCIPAL"
+          },
+          {
+            "name": "pres_art_sistolica",
+            "expr": "PRES_ART_SISTOLICA"
+          },
+          {
+            "name": "pres_art_diastolica",
+            "expr": "PRES_ART_DIASTOLICA"
+          },
+          {
+            "name": "sist_anterior",
+            "expr": "SIST_ANTERIOR"
+          },
+          {
+            "name": "diast_anterior",
+            "expr": "DIAST_ANTERIOR"
+          },
+          {
+            "name": "dias_desde_ultima_cita",
+            "expr": "DIAS_DESDE_ULTIMA_CITA"
+          },
+          {
+            "name": "cant_tipos_medicamentos",
+            "expr": "CANT_TIPOS_MEDICAMENTOS"
+          },
+          {
+            "name": "costo_total_medicamentos",
+            "expr": "COSTO_TOTAL_MEDICAMENTOS"
+          },
+          {
+            "name": "costo_total_insumos",
+            "expr": "COSTO_TOTAL_INSUMOS"
+          }
+        ],
+        "measures": [
+          {
+            "name": "total_pacientes",
+            "expr": "COUNT(DISTINCT CODIGO_ANONIMIZADO)"
+          },
+          {
+            "name": "prom_sistolica",
+            "expr": "AVG(PRES_ART_SISTOLICA)"
+          },
+          {
+            "name": "prom_diastolica",
+            "expr": "AVG(PRES_ART_DIASTOLICA)"
+          },
+          {
+            "name": "prom_sist_anterior",
+            "expr": "AVG(SIST_ANTERIOR)"
+          },
+          {
+            "name": "prom_diast_anterior",
+            "expr": "AVG(DIAST_ANTERIOR)"
+          },
+          {
+            "name": "suma_costo_medicamentos",
+            "expr": "SUM(COSTO_TOTAL_MEDICAMENTOS)"
+          },
+          {
+            "name": "suma_costo_insumos",
+            "expr": "SUM(COSTO_TOTAL_INSUMOS)"
+          },
+          {
+            "name": "costo_total",
+            "expr": "SUM(COSTO_TOTAL_MEDICAMENTOS + COSTO_TOTAL_INSUMOS)"
+          },
+          {
+            "name": "costo_prom_por_paciente",
+            "expr": "MEASURE(costo_total) / MEASURE(total_pacientes)"
+          },
+          {
+            "name": "count_registros",
+            "expr": "COUNT(*)"
+          }
+        ]
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "1e5541c6",
+      "displayName": "Page 1",
+      "layout": [
+        {
+          "widget": {
+            "name": "kpi_total_pacientes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(total_pacientes)",
+                      "expression": "MEASURE(`total_pacientes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Pacientes",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(total_pacientes)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_prom_sistolica",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(prom_sistolica)",
+                      "expression": "MEASURE(`prom_sistolica`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Presión Sistólica Promedio",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(prom_sistolica)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  },
+                  "formatTemplate": "{{ @formatted }} mmHg"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_prom_diastolica",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(prom_diastolica)",
+                      "expression": "MEASURE(`prom_diastolica`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Presión Diastólica Promedio",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(prom_diastolica)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  },
+                  "formatTemplate": "{{ @formatted }} mmHg"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_costo_promedio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(costo_prom_por_paciente)",
+                      "expression": "MEASURE(`costo_prom_por_paciente`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Costo Promedio Total por Paciente",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(costo_prom_por_paciente)",
+                  "format": {
+                    "type": "number-currency",
+                    "abbreviation": "compact",
+                    "currencyCode": "USD",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 0,
+            "width": 3,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "dist_edad",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "grupo_edad",
+                      "expression": "`grupo_edad`"
+                    },
+                    {
+                      "name": "measure(total_pacientes)",
+                      "expression": "MEASURE(`total_pacientes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Distribución por Grupos de Edad",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "grupo_edad",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(total_pacientes)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "scatter_presion",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "sexo",
+                      "expression": "`sexo`"
+                    },
+                    {
+                      "name": "pres_art_sistolica",
+                      "expression": "`pres_art_sistolica`"
+                    },
+                    {
+                      "name": "pres_art_diastolica",
+                      "expression": "`pres_art_diastolica`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Presión Sistólica vs Diastólica por Sexo",
+                "showTitle": true
+              },
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "pres_art_sistolica",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "pres_art_diastolica",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "sexo",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "prom_presion_edad",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(prom_sistolica)",
+                      "expression": "MEASURE(`prom_sistolica`)"
+                    },
+                    {
+                      "name": "grupo_edad",
+                      "expression": "`grupo_edad`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Presiones Promedio por Grupo de Edad",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "grupo_edad",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(prom_sistolica)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "measure(prom_sistolica)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 10,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "costo_med_servicio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "servicio_prestacional",
+                      "expression": "`servicio_prestacional`"
+                    },
+                    {
+                      "name": "measure(suma_costo_medicamentos)",
+                      "expression": "MEASURE(`suma_costo_medicamentos`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Costo de Medicamentos por Servicio",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "servicio_prestacional",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(suma_costo_medicamentos)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 23,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "dist_cantidad_med",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "cant_tipos_medicamentos",
+                      "expression": "`cant_tipos_medicamentos`"
+                    },
+                    {
+                      "name": "measure(count_registros)",
+                      "expression": "MEASURE(`count_registros`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Distribución de Cantidad de Medicamentos",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "cant_tipos_medicamentos",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(count_registros)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 23,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "pie_sexo",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "measure(total_pacientes)",
+                      "expression": "MEASURE(`total_pacientes`)"
+                    },
+                    {
+                      "name": "sexo",
+                      "expression": "`sexo`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Distribución por Sexo",
+                "showTitle": true
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 1
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "measure(total_pacientes)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true,
+                  "text": {
+                    "fieldName": "sexo"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 4,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "top_10_diag",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "diagnostico_principal",
+                      "expression": "`diagnostico_principal`"
+                    },
+                    {
+                      "name": "measure(total_pacientes)",
+                      "expression": "MEASURE(`total_pacientes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 10 Diagnósticos Principales",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "diagnostico_principal",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(total_pacientes)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "costo_nivel_eess",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "nivel_eess",
+                      "expression": "`nivel_eess`"
+                    },
+                    {
+                      "name": "measure(costo_prom_por_registro)",
+                      "expression": "MEASURE(`costo_prom_por_registro`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Costo Promedio Total por Nivel de Establecimiento",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "nivel_eess",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(costo_prom_por_registro)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 29,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "pac_personal",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "tipo_personal_salud",
+                      "expression": "`tipo_personal_salud`"
+                    },
+                    {
+                      "name": "measure(total_pacientes)",
+                      "expression": "MEASURE(`total_pacientes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Pacientes por Tipo de Personal de Salud",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "tipo_personal_salud",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(total_pacientes)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 35,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "dist_servicio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "servicio_prestacional",
+                      "expression": "`servicio_prestacional`"
+                    },
+                    {
+                      "name": "measure(total_pacientes)",
+                      "expression": "MEASURE(`total_pacientes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Distribución por Servicio Prestacional",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "servicio_prestacional",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(total_pacientes)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 35,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "tabla_target",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "target_destino",
+                      "expression": "`target_destino`"
+                    },
+                    {
+                      "name": "measure(total_pacientes)",
+                      "expression": "MEASURE(`total_pacientes`)"
+                    },
+                    {
+                      "name": "measure(prom_sistolica)",
+                      "expression": "MEASURE(`prom_sistolica`)"
+                    },
+                    {
+                      "name": "measure(prom_diastolica)",
+                      "expression": "MEASURE(`prom_diastolica`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Distribución por TARGET_DESTINO",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "target_destino",
+                    "useForSearch": true
+                  },
+                  {
+                    "fieldName": "measure(total_pacientes)"
+                  },
+                  {
+                    "fieldName": "measure(prom_sistolica)"
+                  },
+                  {
+                    "fieldName": "measure(prom_diastolica)"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 41,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "hist_dias_cita",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "dias_desde_ultima_cita",
+                      "expression": "`dias_desde_ultima_cita`"
+                    },
+                    {
+                      "name": "measure(count_registros)",
+                      "expression": "MEASURE(`count_registros`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Distribución de Días desde Última Cita",
+                "showTitle": true
+              },
+              "widgetType": "histogram",
+              "encodings": {
+                "x": {
+                  "fieldName": "dias_desde_ultima_cita",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(count_registros)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 47,
+            "width": 12,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "comp_sistolica",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "grupo_edad",
+                      "expression": "`grupo_edad`"
+                    },
+                    {
+                      "name": "measure(prom_sistolica)",
+                      "expression": "MEASURE(`prom_sistolica`)"
+                    },
+                    {
+                      "name": "measure(prom_sist_anterior)",
+                      "expression": "MEASURE(`prom_sist_anterior`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "frame": {
+                "title": "Comparativo Presión Sistólica: Actual vs Anterior",
+                "showTitle": true
+              },
+              "widgetType": "combo",
+              "encodings": {
+                "x": {
+                  "fieldName": "grupo_edad",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "measure(prom_sistolica)",
+                        "displayName": "Actual"
+                      },
+                      {
+                        "fieldName": "measure(prom_sist_anterior)",
+                        "displayName": "Anterior"
+                      }
+                    ]
+                  },
+                  "secondary": {
+                    "fields": []
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 54,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "comp_diastolica",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "hta_metrics",
+                  "fields": [
+                    {
+                      "name": "grupo_edad",
+                      "expression": "`grupo_edad`"
+                    },
+                    {
+                      "name": "measure(prom_diastolica)",
+                      "expression": "MEASURE(`prom_diastolica`)"
+                    },
+                    {
+                      "name": "measure(prom_diast_anterior)",
+                      "expression": "MEASURE(`prom_diast_anterior`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "frame": {
+                "title": "Comparativo Presión Diastólica: Actual vs Anterior",
+                "showTitle": true
+              },
+              "widgetType": "combo",
+              "encodings": {
+                "x": {
+                  "fieldName": "grupo_edad",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "measure(prom_diastolica)",
+                        "displayName": "Actual"
+                      },
+                      {
+                        "fieldName": "measure(prom_diast_anterior)",
+                        "displayName": "Anterior"
+                      }
+                    ]
+                  },
+                  "secondary": {
+                    "fields": []
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 54,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
