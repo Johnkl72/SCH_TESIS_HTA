@@ -1,5 +1,5 @@
 # Databricks notebook source
-workspace.hta_sis.ua_hta_gold_ml# Databricks notebook source
+# Databricks notebook source
 import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 
