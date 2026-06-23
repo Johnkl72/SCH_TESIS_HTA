@@ -35,7 +35,9 @@ diag_agg = (
     .filter(F.col("rn") == 1)
     .join(dim_diag, "CODDIA", "left")
     .select(
-        "ID_REGISTRO_REL", 
+        "ID_REGISTRO_REL",
+        "CODDIA",
+        "C10_NOMBRE",
         F.col("C10_NOMBRE").alias("DIAGNOSTICO_PRINCIPAL"),
         "TIPO_DIAGNOSTICO"
     )
@@ -97,24 +99,30 @@ df_consolidado = (
     ])
     
     # Llenamos nulos para las variables de texto
-    .fillna("SIN DIAGNOSTICO", subset=["DIAGNOSTICO_PRINCIPAL"])
+    .fillna("SIN DIAGNOSTICO", subset=["DIAGNOSTICO_PRINCIPAL", "C10_NOMBRE"])
+    .fillna("SIN_CODIGO", subset=["CODDIA"])
     .fillna("SIN MEDICACION", subset=["NOMBRES_MEDICAMENTOS"])
 )
 
 # COMMAND ----------
 
+# DBTITLE 1,Cell 4
 # 1. Definimos la ventana histórica por paciente ordenado por fecha
 window_paciente_hist = Window.partitionBy("CODIGO_ANONIMIZADO").orderBy("FECHA_ATENCION")
 
+# Capturamos el estado de la cita inmediatamente anterior (Variables X puras)
 df_features = (
     df_consolidado
-    # Capturamos el estado de la cita inmediatamente anterior (Variables X puras)
-    .withColumn("SIST_ANTERIOR", F.lag("PRES_ART_SISTOLICA").over(window_paciente_hist))
-    .withColumn("DIAST_ANTERIOR", F.lag("PRES_ART_DIASTOLICA").over(window_paciente_hist))
-    .withColumn("FECHA_ATENCION_ANTERIOR", F.lag("FECHA_ATENCION").over(window_paciente_hist))
-    
-    .withColumn("DIAS_DESDE_ULTIMA_CITA", F.datediff(F.col("FECHA_ATENCION"), F.col("FECHA_ATENCION_ANTERIOR")))
-    
+    .select(
+        "*",  # Todas las columnas existentes
+        F.lag("PRES_ART_SISTOLICA").over(window_paciente_hist).alias("SIST_ANTERIOR"),
+        F.lag("PRES_ART_DIASTOLICA").over(window_paciente_hist).alias("DIAST_ANTERIOR"),
+        F.lag("FECHA_ATENCION").over(window_paciente_hist).alias("FECHA_ATENCION_ANTERIOR"),
+        F.datediff(
+            F.col("FECHA_ATENCION"), 
+            F.lag("FECHA_ATENCION").over(window_paciente_hist)
+        ).alias("DIAS_DESDE_ULTIMA_CITA")
+    )
     .fillna(-1, subset=["SIST_ANTERIOR", "DIAST_ANTERIOR", "DIAS_DESDE_ULTIMA_CITA"])
 )
 
@@ -123,14 +131,9 @@ df_features = (
 # Celda 5 para Histórico (HA_HTA_GOLD)
 df_gold_final = (
     df_features
-    # PROTECCIÓN DEL TARGET: Lo renombramos para que sea inconfundible
-    .withColumnRenamed("DESTINO_ASEGURADO", "TARGET_DESTINO")
-    
     # El Gran Drop: Conservamos CODIGO_ANONIMIZADO, eliminamos el resto
     .drop(
         "ID_REGISTRO_REL",           # ID transaccional purgado
-        "FECHA_ATENCION",            # Reemplazada por la variable de Días relativos
-        "FECHA_ATENCION_ANTERIOR",   # Variable temporal transitoria purgada
         "CODIGO_SERV_PRESTACIONAL"   # ID redundante, dejamos la descripción
     )
 )
